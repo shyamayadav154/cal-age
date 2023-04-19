@@ -4,146 +4,124 @@ import { useForm, UseFormRegister } from "react-hook-form";
 import { FC, InputHTMLAttributes } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ReactComponent as ArrowIcon } from "./assets/icon-arrow.svg";
+import { ArrowDownIcon } from "@heroicons/react/24/solid";
+// import { ReactComponent as ArrowIcon } from "./assets/icon-arrow.svg";
 
 const schema = z.object({
-  day: z.number({
-    required_error: "This field is required",
-    invalid_type_error: "This field is required",
-  }).min(1, {
-    message: "Must be valid day",
-  }).max(31, {
-    message: "Must be valid day",
-  }),
-  month: z.number(
-    {
+  day: z
+    .number({
       required_error: "This field is required",
       invalid_type_error: "This field is required",
-    },
-  ).min(1, {
-    message: "Must be valid month",
-  }).max(12, {
-    message: "Must be valid month",
-  }),
-  year: z.number(
-    {
+    })
+    .min(1, {
+      message: "Must be valid day",
+    })
+    .max(31, {
+      message: "Must be valid day",
+    }),
+  month: z
+    .number({
       required_error: "This field is required",
       invalid_type_error: "This field is required",
-    },
-  ).min(1990, {
-    message: "Must be valid year",
-  }).max(2023, {
-    message: "Must be valid year",
-  }),
+    })
+    .min(1, {
+      message: "Must be valid month",
+    })
+    .max(12, {
+      message: "Must be valid month",
+    }),
+  year: z
+    .number({
+      required_error: "This field is required",
+      invalid_type_error: "This field is required",
+    })
+    .min(1990, {
+      message: "Must be valid year",
+    })
+    .max(2023, {
+      message: "Must be valid year",
+    }),
 });
 
+type DateOfBirth = z.infer<typeof schema>;
+
 function App() {
-  const [dateDiff, setDateDiff] = useState<null | Date>(null);
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const [dateDiff, setDateDiff] = useState(0);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<DateOfBirth>({
     resolver: zodResolver(schema),
     mode: "onSubmit",
   });
-
   console.log({ errors });
 
-  const onSubmit = (data) => console.log(data);
-
-  function onSubmitHandler(data) {
+  function onSubmitHandler(data: { day: number; month: number; year: number }) {
     console.log(data);
     const { day, month, year } = data;
     const date = new Date(year, month - 1, day);
     // const date = format(new Date(year, month - 1, day), "dd MMMM yyyy");
-    const dateDiffInDays = Math.floor(
-      (new Date().getTime() - date.getTime()) / (1000 * 3600 * 24),
-    );
+    const dateDiffInDays = Math.floor((new Date().getTime() - date.getTime()) / (1000 * 3600 * 24));
     setDateDiff(dateDiffInDays);
     console.log(date, dateDiffInDays, "this is date");
   }
 
-  function onChangeHandler(e: KeyboardEvent<HTMLInputElement>) {
-    const key = e.key;
-    const value = e.target.value;
-
-    console.log(key, value);
-    if (key === "Backspace" && value === "") {
-      e.target.previousSibling.focus();
-    }
-  }
-
-  const dateDiffYears: number | string = dateDiff
-    ? Math.floor(dateDiff / 365)
-    : "--";
-  const dateDiffMonths: number | string = dateDiff
-    ? Math.floor((dateDiff % 365) / 30)
-    : "--";
-  const dateDiffDays: number | string = dateDiff
-    ? Math.floor((dateDiff % 365) % 30)
-    : "--";
+  const dateDiffYears: number | string = dateDiff ? Math.floor(dateDiff / 365) : "--";
+  const dateDiffMonths: number | string = dateDiff ? Math.floor((dateDiff % 365) / 30) : "--";
+  const dateDiffDays: number | string = dateDiff ? Math.floor((dateDiff % 365) % 30) : "--";
 
   console.log({
     dateDiffYears,
     dateDiffMonths,
     dateDiffDays,
   });
-
   return (
-    <main className="text-2xl font-medium grid p-5 bg-slate-100 place-content-center h-screen">
-      <section className="shadow-sm p-5 m-5    xs:p-10 rounded-2xl rounded-br-[20%]  xs:rounded-br-[40%] bg-white">
+    <main className='grid place-content-center p-5 h-screen text-2xl font-medium bg-slate-100'>
+      <section className='shadow-sm p-5 m-5    xs:p-10 rounded-2xl rounded-br-[20%]  xs:rounded-br-[40%] bg-white'>
         <form
-          onKeyDown={onChangeHandler}
           onSubmit={handleSubmit(onSubmitHandler)}
-          className="   border-b-2 border-gray-100 pb-10 xs:pr-20 xs:mr-10 relative"
+          className='relative pb-10 border-b-2 border-gray-100 xs:pr-20 xs:mr-10'
         >
-          <div className="flex gap-5 ">
+          <div className='flex gap-5'>
             <FormInput
               register={register}
-              id="day"
-              label="Day"
-              type="text"
-              placeholder="DD"
+              id='day'
+              label='Day'
+              type='text'
+              placeholder='DD'
               error={errors.day?.message}
             />
             <FormInput
               register={register}
-              id="month"
-              label="Month"
-              type="text"
-              placeholder="MM"
+              id='month'
+              label='Month'
+              type='text'
+              placeholder='MM'
               error={errors.month?.message}
             />
             <FormInput
               register={register}
-              id="year"
-              label="Year"
-              type="text"
-              placeholder="YYYY"
+              id='year'
+              label='Year'
+              type='text'
+              placeholder='YYYY'
               error={errors.year?.message}
             />
           </div>
-          <div className="absolute mx-auto inset-x-0 xs:h-20 xs:w-20 h-5 w-5 bottom-1   xs:-right-10">
-            <button className="bg-black hover:bg-brand-purple transition duration-100 p-6 xs:p-10  text-white h-full w-full grid place-content-center rounded-full">
-              <ArrowIcon className='w-6 h-6 xs:h-12 xs:h-12 stroke-2' />
-            </button>
-          </div>
+          <button className='bg-black hover:bg-brand-purple rounded-full p-4 xs:p-5 -bottom-7 xs:-bottom-10  absolute right-1/2 translate-x-1/2  xs:right-0'>
+            <ArrowDownIcon className='xs:w-12 h-6 w-6 xs:h-12 text-white' />
+          </button>
         </form>
-        <article className="xs:text-6xl text-5xl my-5 space-y-2 mt-10 italic  font-[900]">
+        <article className='my-5 mt-10 space-y-2 text-5xl italic xs:text-6xl font-[900]'>
           <div>
-            <span className="text-brand-purple">
-              {dateDiffYears}
-            </span>{" "}
-            years
+            <span className='text-brand-purple'>{dateDiffYears}</span> years
           </div>
           <div>
-            <span className="text-brand-purple">
-              {dateDiffMonths}
-            </span>{" "}
-            months
+            <span className='text-brand-purple'>{dateDiffMonths}</span> months
           </div>
           <div>
-            <span className="text-brand-purple">
-              {dateDiffDays}
-            </span>{" "}
-            days
+            <span className='text-brand-purple'>{dateDiffDays}</span> days
           </div>
         </article>
       </section>
@@ -161,7 +139,7 @@ interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
 function FormInput(props: FormInputProps) {
   const { id, label, register, error, ...otherProps } = props;
   return (
-    <div className="flex flex-col">
+    <div className='flex flex-col'>
       <label
         htmlFor={id}
         className={`tracking-widest text-xs ${
@@ -175,12 +153,10 @@ function FormInput(props: FormInputProps) {
         {...register(id, {
           valueAsNumber: true,
         })}
-        type="number"
-        className="border-2 placeholder:text-light-grey text-sm mt-1 font-bold pl xs:text-3xl focus:outline-none focus:border-purple-600 border-gray-50 p-2.5 w-20 xs:w-36 rounded-md"
+        type='number'
+        className='p-2.5 mt-1 w-20 text-sm font-bold rounded-md border-2 border-gray-50 focus:border-purple-600 focus:outline-none placeholder:text-light-grey pl xs:text-3xl xs:w-36'
       />
-      <span className="text-xs text-light-red mt-1 italic font-thin">
-        {error}
-      </span>
+      <span className='mt-1 text-xs italic font-thin text-light-red'>{error}</span>
     </div>
   );
 }
